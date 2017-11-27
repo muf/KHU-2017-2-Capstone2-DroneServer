@@ -8,6 +8,7 @@ var path = require('path')
 var bodyParser = require('body-parser')
 var conf = require('./conf').get(process.env.NODE_ENV);
 
+var drone = require(__dirname + '/private/javascript/drone.js')
 // make instances
 var app = express()
 
@@ -37,8 +38,10 @@ app.use(function(err, req, res, next) {
 })
 
 // listen application
-app.listen(conf.server.port, function(){
-  console.log("Recovering APSP Application Running on %s port", conf.server.port);
+app.listen(function(){
+  var port = this.address().port
+  console.log("Recovering APSP Application Running on %s port", port);
+  drone.init(port)
 });
 
 

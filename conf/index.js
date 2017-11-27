@@ -5,6 +5,7 @@ conf.defaults = {
     server : {
         name : "droneController",
         description:"web application which controlls bebop drone",
+        ip : '123',
         port : 4444
     }
 };

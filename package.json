@@ -17,10 +17,12 @@
   },
   "homepage": "https://github.com/muf/KHU-2017-2-Capstone2-DroneServer#readme",
   "dependencies": {
+    "async": "^2.6.0",
     "cloneextend": "0.0.3",
     "cors": "^2.8.4",
     "express": "^4.16.2",
     "node-bebop": "^0.6.0",
-    "path": "^0.12.7"
+    "path": "^0.12.7",
+    "request": "^2.83.0"
   }
 }
