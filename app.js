@@ -4,8 +4,8 @@ var express = require('express')
 // sub app require
 
 // module require
-var path = require('path');
-var bodyParser = require('body-parser');
+var path = require('path')
+var bodyParser = require('body-parser')
 var conf = require('./conf').get(process.env.NODE_ENV);
 
 // make instances
