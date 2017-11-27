@@ -1,0 +1,26 @@
+{
+  "name": "khu-2017-2-capstone2-droneserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/muf/KHU-2017-2-Capstone2-DroneServer.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/muf/KHU-2017-2-Capstone2-DroneServer/issues"
+  },
+  "homepage": "https://github.com/muf/KHU-2017-2-Capstone2-DroneServer#readme",
+  "dependencies": {
+    "cloneextend": "0.0.3",
+    "cors": "^2.8.4",
+    "express": "^4.16.2",
+    "node-bebop": "^0.6.0",
+    "path": "^0.12.7"
+  }
+}
