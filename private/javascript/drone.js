@@ -20,10 +20,9 @@ var drone = bebop.createClient();
 // }
 
 drone.init = function(port){
-
     async.waterfall([
-        function (callback) {   
-            var query = "ifconfig | grep wlan | awk '{split($0, data, \"HWaddr \"); printf(\"%s\\n\",data[2]);}'"
+        function (callback) {
+            var query = "ifconfig | gsrep wlan | awk '{split($0, data, \"HWaddr \"); printf(\"%s\\n\",data[2]);}'"
             console.log(query)
             exec(query, (error, stdout, stderr) => {
                 if (error) {
@@ -39,6 +38,7 @@ drone.init = function(port){
             });
         },
         function(mac, callback){
+            console.log(`mac:${mac}`)
             request({
                 url : serverURI + "/addDrone",
                 method:"POST",
