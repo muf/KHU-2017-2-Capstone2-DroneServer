@@ -2,18 +2,18 @@
 var async = require('async');
 var request = require('request')
 
+var nodeBebop = require(__dirname + '/node-bebop.js')
+// process.nodeBebop = nodeBebop
 const { exec,spawn } = require('child_process')
-var bebop = require('node-bebop');
-var serverURI = "http://192.168.123.111"
+
+var serverURI = "http://14.33.77.250"
 var serviceMonitorPort=":3002"
 var droneIP = "192.168.123.143"
 var droneID = ""
 var drone = {}
-var drone = bebop.createClient()
+// var drone = bebop.createClient()
 var droneGPS 
 var flag = true
-
-
 
 var interrupt = {kill:false, pause:true}
 var mutex = {lock:false, timer:null}
@@ -22,8 +22,11 @@ var taskTick = false
 var service; //lazy인듯
 var seq = -1;
 var errList= []
+
 drone.run = function(body){
     console.log(body)
+    //https://github.com/hybridgroup/node-bebop
+    //https://github.com/hybridgroup/node-bebop/blob/master/docs/
     body.forEach(msg => {
         if(msg.cmd == "gotoPos"){
             // drone.setHome(msg.params.position.lat, msg.params.position.lng, 500)
@@ -32,15 +35,25 @@ drone.run = function(body){
             console.log(`goto position lat: ${msg.params.position.lat}, lng: ${msg.params.position.lng} `)
         }
         else if(msg.cmd == "land"){
-            
+            nodeBebop.land()
         }
-    })
+        else if(msg.cmd == "takeOff"){
+            nodeBebop.takeOff()
+        }
+        else if(msg.cmd == "sendGps"){
+            nodeBebop.once("PositionChanged", function(data) {
+                droneGPS = data
+                console.log(droneGPS)
+            })
+        }
+    },nodeBebop)
 }
 
-drone.main = function(count){
+drone.main = function(){
+    var count = 0
     // 매 주기 마다 상태를 체크한다.
     console.log("main start")
-    drone.init()
+    //drone.init()
     //readyForTask() //@@ test task 준비 ㄴ
     async.whilst(
         function () { 
@@ -48,8 +61,7 @@ drone.main = function(count){
             count++
 
             // close test용 함수
-            if(count > 200){
-                //interrupt.kill
+            if(count > 20000000){
                 interrupt.kill= true
             }
             if(interrupt.kill){
@@ -57,11 +69,7 @@ drone.main = function(count){
             }
 
             if(!mutex.lock && !interrupt.pause){
-                if(count > 5){
-
-                    taskTick = true
-                    count = 0
-                }
+                taskTick = true
             }
             return true
         },
@@ -72,7 +80,7 @@ drone.main = function(count){
             }
             checkTimer = setTimeout(function(){
                callback()
-            }, 1000); 
+            }, 500); 
             // 비동기 함수. 문제 발생 시 임의로 pause 할 수 있다.
             if(!interrupt.pause && taskTick){
                 mainTask(callback)
@@ -86,7 +94,9 @@ drone.main = function(count){
         }
     )
 }
-
+function exitProcess(){
+    process.exit()
+}
 function mainTask(callback){
     //taskTick = false
 
@@ -107,30 +117,10 @@ function mainTask(callback){
             },
             },function (err, response, body) {
                 if (err) console.log(err)
-                drone.run(body)
+                console.log(body)
                 mutex.lock = false
-            
             }
         )
-        // setTimeout(function(){
-        //     console.log("func finished@@@@@@@@@@@@@@@@@@@@@@@2")
-        //     mutex.lock = false
-        // },1000)
-        // async.waterfall([
-        //     function(callback){
-        //         callback(null, "none")
-        //     },
-        //     makeClusterData,
-        //     runAlgorithm,
-        //     // controlDrones,
-        //     function(result, callback){
-
-        //         callback(null, result)
-        //     }
-        //   ], function (err, result) {
-        //     mutex.lock = false
-        //     console.log("func finished.##################")
-        //   });
     }
     else{
         errCount++; //시간이 됬는데 lock 안풀려서 진입 못하는 횟수 증가

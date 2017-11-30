@@ -41,7 +41,7 @@ app.use(function(err, req, res, next) {
 app.listen(function(){
   var port = this.address().port
   console.log("Recovering APSP Application Running on %s port", port);
-  drone.init(port)
+  //drone.init(port)
 });
 
 
