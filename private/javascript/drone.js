@@ -53,7 +53,7 @@ drone.main = function(){
     var count = 0
     // 매 주기 마다 상태를 체크한다.
     console.log("main start")
-    //drone.init()
+    drone.init()
     //readyForTask() //@@ test task 준비 ㄴ
     async.whilst(
         function () { 
@@ -118,6 +118,7 @@ function mainTask(callback){
             },function (err, response, body) {
                 if (err) console.log(err)
                 console.log(body)
+		drone.run(body)
                 mutex.lock = false
             }
         )
