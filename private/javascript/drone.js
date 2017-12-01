@@ -39,9 +39,25 @@ drone.run = function(body){
         }
         else if(msg.cmd == "takeOff"){
             nodeBebop.takeOff()
-        }else if(){
-	
-	}
+        }else if(msg.cmd == "up"){
+            nodeBebop.up(1)    
+        }else if(msg.cmd == "down"){
+            nodeBebop.down(1)    
+        }else if(msg.cmd == "right"){
+            nodeBebop.right(1)    
+        }else if(msg.cmd == "left"){
+            nodeBebop.left(1)    
+        }else if(msg.cmd == "forward"){
+            nodeBebop.forwardup(1)    
+        }else if(msg.cmd == "backward"){
+            nodeBebop.backward(1)    
+        }else if(msg.cmd == "stop"){
+            nodeBebop.stop()    
+        }else if(msg.cmd == "clockwise"){
+            nodeBebop.clockwise(1)    
+        }else if(msg.cmd == "counterClockwise"){
+            nodeBebop.counterClockwise(1)    
+        }
         else if(msg.cmd == "sendGps"){
             nodeBebop.once("PositionChanged", function(data) {
                 droneGPS = data
