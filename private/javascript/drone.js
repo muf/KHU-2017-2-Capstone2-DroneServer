@@ -39,7 +39,9 @@ drone.run = function(body){
         }
         else if(msg.cmd == "takeOff"){
             nodeBebop.takeOff()
-        }
+        }else if(){
+	
+	}
         else if(msg.cmd == "sendGps"){
             nodeBebop.once("PositionChanged", function(data) {
                 droneGPS = data
@@ -75,12 +77,12 @@ drone.main = function(){
         },
         function (callback) {
             count++;
-            if(errCount > 3){
+            if(errCount > 100){
                 callback(err = {message: "mainTask가 정상적인 시간내에 종료되지 않음."})
             }
             checkTimer = setTimeout(function(){
                callback()
-            }, 500); 
+            }, 100); 
             // 비동기 함수. 문제 발생 시 임의로 pause 할 수 있다.
             if(!interrupt.pause && taskTick){
                 mainTask(callback)
@@ -104,7 +106,6 @@ function mainTask(callback){
     // 알고리즘 돌려서 결과 변수에 저장
     // 드론 명령 후 확인
     // 드론 도착 확인.. (이게 너무 먼 거리가 되는 경우 ..? 이상한게 맞음)
-
     if(mutex.lock == false){
         errCount = 0 // 에러 카운트 초기화
         mutex.lock = true
@@ -117,7 +118,7 @@ function mainTask(callback){
             },
             },function (err, response, body) {
                 if (err) console.log(err)
-                console.log(body)
+                //console.log(body)
 		drone.run(body)
                 mutex.lock = false
             }
