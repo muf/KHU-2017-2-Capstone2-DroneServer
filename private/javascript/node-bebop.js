@@ -1,7 +1,7 @@
 
 var bebop = require('node-bebop')
 var nodeBebop = bebop.createClient()
-
+process.drone = nodeBebop
 nodeBebop.connect(function(){
     nodeBebop.addListener()
     console.log("connected!@@@@")
