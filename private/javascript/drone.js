@@ -54,6 +54,7 @@ drone.testGPS = function (){
                     model: "bebop",
                     mac: mac
                 },
+
                 },function (err, response, body) {
                     if (err) console.log(err)
                     // console.log(body)
@@ -115,38 +116,38 @@ drone.run = function(body){
         }
         else if(msg.cmd == "land"){
             console.log("RUN @ land")
-            //  nodeBebop.land()
+             nodeBebop.land()
         }
         else if(msg.cmd == "takeOff"){
             console.log("RUN @ takeOff")
-            //  nodeBebop.takeOff()
+             nodeBebop.takeOff()
         }else if(msg.cmd == "up"){
             console.log("RUN @ up")
-            // nodeBebop.up(5)    
+            nodeBebop.up(5)    
         }else if(msg.cmd == "down"){
             console.log("RUN @ down")
-            // nodeBebop.down(5)    
+            nodeBebop.down(5)    
         }else if(msg.cmd == "right"){
             console.log("RUN @ right")
-            // nodeBebop.right(5)    
+            nodeBebop.right(5)    
         }else if(msg.cmd == "left"){
             console.log("RUN @ left")
-            // nodeBebop.left(5)    
+            nodeBebop.left(5)    
         }else if(msg.cmd == "forward"){
             console.log("RUN @ forward")
-            // nodeBebop.forward(5)
+            nodeBebop.forward(5)
         }else if(msg.cmd == "backward"){
             console.log("RUN @ backward")
-            // nodeBebop.backward(5)    
+            nodeBebop.backward(5)    
         }else if(msg.cmd == "stop"){
             console.log("RUN @ stop")
-            // nodeBebop.stop()
+            nodeBebop.stop()
         }else if(msg.cmd == "clockwise"){
             console.log("RUN @ clockwise")
-            // nodeBebop.clockwise(1)    
+            nodeBebop.clockwise(1)    
         }else if(msg.cmd == "counterClockwise"){
             console.log("RUN @ counterClockwise")
-            // nodeBebop.counterClockwise(1)    
+            nodeBebop.counterClockwise(1)    
         } else if(msg.cmd == "sendGps"){
             console.log("RUN @ sendGps")
             nodeBebop.once("PositionChanged", function(data) {
