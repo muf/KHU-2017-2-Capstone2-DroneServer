@@ -28,9 +28,48 @@ var taskTick = false
 var service; //lazy인듯
 var seq = -1;
 var errList= []
-
+drone.testGPS = function (){    
+    async.waterfall([
+        function (callback) {
+            nodeBebop.once("PositionChanged", function(data) {
+                droneGPS = data 
+                    callback(null, data)
+            })
+        },
+        function(gps, callback){
+            //@@ test mac = 
+            mac = "AA:AA:AA:AA:AA:AA"
+            process.global = {mac:mac}
+            // console.log(`mac:${mac}`)
+            request({
+                url : serverURI + serviceMonitorPort + "/addDrone",
+                method:"POST",
+                json:true,
+                body:{
+                    gps:{
+                        lat: gps.latitude.toString(),
+                        lng: gps.longitude.toString(),
+                        al: gps.altitude.toString()
+                    },
+                    model: "bebop",
+                    mac: mac
+                },
+                },function (err, response, body) {
+                    if (err) console.log(err)
+                    // console.log(body)
+                    console.log("db update for gps")
+                    callback(null, body)
+                }
+            )
+        }
+    ], function (err, service) {
+        console.log("done")
+    });
+}
+process.drone = drone
 drone.run = function(body){
     console.log(body)
+    //console.log("!!!!!!!!!!!!!!!!!!!!! " + nodeBebop.GPSSettings.homeType())
     //https://github.com/hybridgroup/node-bebop
     //https://github.com/hybridgroup/node-bebop/blob/master/docs/
                         
@@ -41,7 +80,33 @@ drone.run = function(body){
         if(check < 0 || check > 3){
             msg.cmd = "expired"
         }
-        if(msg.cmd == "gotoPos"){
+        //http://forum.developer.parrot.com/t/bebop-2-indoor-autonomous-flight/4463/3
+        //https://github.com/hybridgroup/node-bebop/issues/48
+        if(msg.cmd == "move"){
+            console.log(Number(msg.position.lat))
+            console.log(Number(msg.position.lng))
+            // nodeBebop.GPSSettings.setHome(Number(msg.position.lat), Number(msg.position.lng,1))
+            // nodeBebop.GPSSettings.setHome(Number(msg.position.lat), Number(msg.position.lng,1))
+            nodeBebop.GPSSettings.setHome(Number(msg.position.lat), Number(msg.position.lng,0))
+            // nodeBebop.GPSSettings.sendControllerGPS(Number(msg.position.lat), Number(msg.position.lng), 0,-1 ,-1)
+           // nodeBebop.GPSSettings.sendControllerGPS(37.2111, 127.07402, 0,-1 ,-1)
+            // nodeBebop.GPSSettings.homeType('PILOT',1)
+            // nodeBebop.GPSSettings.homeType('TAKEOFF',1)
+            nodeBebop.GPSSettings.homeType('FIRST-FIX',1)
+            // nodeBebop.GPSSettings.homeType({type:'TAKEOFF',available:1})
+            // nodeBebop.GPSSettings.homeType({type:'PILOT',available:1})
+            nodeBebop.GPSSettings.homeType({type:'FIRST_FIX',available:1})
+            nodeBebop.GPSSettings.homeType({type:'FIRST_FIX'})
+            nodeBebop.GPSSettings.resetHome()
+            
+            // nodeBebop.GPSSettings.homeType = 'TAKEOFF'
+            // nodeBebop.GPSSettings.setHome(Number(msg.position.lat), Number(msg.position.lng,0))
+            setTimeout(function(){
+                console.log("############## GO TO POSITION")
+                // nodeBebop.Piloting.navigateHome(1)
+            },10000)
+        }
+        else if(msg.cmd == "gotoPos"){
             // drone.setHome(msg.params.position.lat, msg.params.position.lng, 500)
             // 동기화 잘해야함
             // drone.navigateHome()
@@ -50,38 +115,38 @@ drone.run = function(body){
         }
         else if(msg.cmd == "land"){
             console.log("RUN @ land")
-            nodeBebop.land()
+            //  nodeBebop.land()
         }
         else if(msg.cmd == "takeOff"){
             console.log("RUN @ takeOff")
-            nodeBebop.takeOff()
+            //  nodeBebop.takeOff()
         }else if(msg.cmd == "up"){
             console.log("RUN @ up")
-            nodeBebop.up(1)    
+            // nodeBebop.up(5)    
         }else if(msg.cmd == "down"){
             console.log("RUN @ down")
-            nodeBebop.down(1)    
+            // nodeBebop.down(5)    
         }else if(msg.cmd == "right"){
             console.log("RUN @ right")
-            nodeBebop.right(1)    
+            // nodeBebop.right(5)    
         }else if(msg.cmd == "left"){
             console.log("RUN @ left")
-            nodeBebop.left(1)    
+            // nodeBebop.left(5)    
         }else if(msg.cmd == "forward"){
             console.log("RUN @ forward")
-            nodeBebop.forward(1)    
+            // nodeBebop.forward(5)
         }else if(msg.cmd == "backward"){
             console.log("RUN @ backward")
-            nodeBebop.backward(1)    
+            // nodeBebop.backward(5)    
         }else if(msg.cmd == "stop"){
             console.log("RUN @ stop")
-            nodeBebop.stop()    
+            // nodeBebop.stop()
         }else if(msg.cmd == "clockwise"){
             console.log("RUN @ clockwise")
-            nodeBebop.clockwise(1)    
+            // nodeBebop.clockwise(1)    
         }else if(msg.cmd == "counterClockwise"){
             console.log("RUN @ counterClockwise")
-            nodeBebop.counterClockwise(1)    
+            // nodeBebop.counterClockwise(1)    
         } else if(msg.cmd == "sendGps"){
             console.log("RUN @ sendGps")
             nodeBebop.once("PositionChanged", function(data) {
@@ -97,10 +162,10 @@ drone.run = function(body){
     },nodeBebop)
 }
 
-drone.main = function(){
+drone.main = function(port){
     var count = 0
     // 매 주기 마다 상태를 체크한다.
-    drone.init()
+    drone.init(port)
     //readyForTask() //@@ test task 준비 ㄴ
     async.whilst(
         function () { 
@@ -159,6 +224,7 @@ function mainTask(callback){
     if(mutex.lock == false){
         errCount = 0 // 에러 카운트 초기화
         mutex.lock = true
+        drone.testGPS()
         request({
             url : serverURI + serviceMonitorPort + "/receive",
             method:"POST",
@@ -175,11 +241,12 @@ function mainTask(callback){
                 //console.log(body)
                 // console.log(nodeBebop)
                 if(body.length){
+    		            drone.run(body)
                     if(nodeBebop.eventNames().length != 0){
     		            drone.run(body)
                     }else{
                         console.log("reconnect try")
-                       nodeBebop.connect() // 다시 시도
+                      // nodeBebop.connect() // 다시 시도
                     }
                 }
                 mutex.lock = false

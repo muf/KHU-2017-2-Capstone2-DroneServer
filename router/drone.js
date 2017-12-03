@@ -9,5 +9,4 @@ app.use(function(err, req, res, next) {
   console.log("error check");
   console.log(err)
 })
-drone.main()
 module.exports = router

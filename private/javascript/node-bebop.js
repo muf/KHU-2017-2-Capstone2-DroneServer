@@ -25,12 +25,20 @@ nodeBebop.addListener = function(){
         console.log("HomeChanged",data);
       });
       
+      nodeBebop.on("HomeTypeAvailabilityChanged", function(data) {
+        console.log("HomeTypeAvailabilityChanged",data);
+      });
+      
+      nodeBebop.on("HomeTypeChosenChanged", function(data) {
+        console.log("HomeTypeChosenChanged",data);
+      });
+      
       nodeBebop.on("NumberOfSatelliteChanged", function(data) {
         console.log("NumberOfSatelliteChanged ",data);
       });
       
       nodeBebop.on("AllSettingsChanged", function(data) {
-        console.log("HomeChanged",data);
+        console.log("AllSettingsChanged",data);
       });
       
       
