@@ -10,13 +10,6 @@ nodeBebop.test = function(){
     console.log("test")
 }
 nodeBebop.addListener = function(){
-
-    // timer = setInterval(function(){
-    //         drone.once("PositionChanged", function(data) {
-    //             droneGPS = data
-    //             console.log(droneGPS)
-    // },3000)})
-
     nodeBebop.on("ComponentStateListChanged", function(data) {
         console.log("ComponentStateListChanged", data);
       });
@@ -69,9 +62,5 @@ nodeBebop.addListener = function(){
       nodeBebop.on("landing", function() {
         console.log("landing");
       });
-    
-    //   drone.on("unknown", function(data) {
-    //     console.log("unknown", data);
-    //   });
-}
+  }
 module.exports = nodeBebop

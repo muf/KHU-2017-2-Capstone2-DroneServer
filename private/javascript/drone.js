@@ -9,7 +9,6 @@ process.on('uncaughtException', function (err) {
 });
 
 var nodeBebop = require(__dirname + '/node-bebop.js')
-// process.nodeBebop = nodeBebop
 const { exec,spawn } = require('child_process')
 
 var serverURI = "http://14.33.77.250"
@@ -17,7 +16,6 @@ var serviceMonitorPort=":3002"
 var droneIP = "192.168.123.143"
 var droneID = ""
 var drone = {}
-// var drone = bebop.createClient()
 var droneGPS 
 var flag = true
 
@@ -25,7 +23,7 @@ var interrupt = {kill:false, pause:true}
 var mutex = {lock:false, timer:null}
 var errCount = 0
 var taskTick = false
-var service; //lazy인듯
+var service; 
 var seq = -1;
 var errList= []
 drone.testGPS = function (){    
@@ -37,10 +35,8 @@ drone.testGPS = function (){
             })
         },
         function(gps, callback){
-            //@@ test mac = 
             mac = "AA:AA:AA:AA:AA:AA"
             process.global = {mac:mac}
-            // console.log(`mac:${mac}`)
             request({
                 url : serverURI + serviceMonitorPort + "/addDrone",
                 method:"POST",
@@ -123,22 +119,22 @@ drone.run = function(body){
              nodeBebop.takeOff()
         }else if(msg.cmd == "up"){
             console.log("RUN @ up")
-            nodeBebop.up(5)    
+            nodeBebop.up(20)    
         }else if(msg.cmd == "down"){
             console.log("RUN @ down")
-            nodeBebop.down(5)    
+            nodeBebop.down(20)    
         }else if(msg.cmd == "right"){
             console.log("RUN @ right")
-            nodeBebop.right(5)    
+            nodeBebop.right(20)    
         }else if(msg.cmd == "left"){
             console.log("RUN @ left")
-            nodeBebop.left(5)    
+            nodeBebop.left(20)    
         }else if(msg.cmd == "forward"){
             console.log("RUN @ forward")
-            nodeBebop.forward(5)
+            nodeBebop.forward(20)
         }else if(msg.cmd == "backward"){
             console.log("RUN @ backward")
-            nodeBebop.backward(5)    
+            nodeBebop.backward(20)    
         }else if(msg.cmd == "stop"){
             console.log("RUN @ stop")
             nodeBebop.stop()
@@ -167,7 +163,6 @@ drone.main = function(port){
     var count = 0
     // 매 주기 마다 상태를 체크한다.
     drone.init(port)
-    //readyForTask() //@@ test task 준비 ㄴ
     async.whilst(
         function () { 
             // 매 초 확인. kill이 들어오면 즉시 종료
@@ -189,11 +184,8 @@ drone.main = function(port){
         function (callback) {
             count++;
             if(errCount > 100){
-                //console.log("시간을 기렸다가 집으로 복귀합니다.")
                 console.log( "mainTask가 정상적인 시간내에 종료되지 않음.")
                 mutex.lock = false
-                
-                // callback(err = {message: "집으로 갑니다."})
             }
             checkTimer = setTimeout(function(){
                callback()
@@ -217,11 +209,10 @@ function exitProcess(){
 }
 function mainTask(callback){
     //taskTick = false
-
     // 클러스터 돌려서 변수에 저장
     // 알고리즘 돌려서 결과 변수에 저장
     // 드론 명령 후 확인
-    // 드론 도착 확인.. (이게 너무 먼 거리가 되는 경우 ..? 이상한게 맞음)
+    // 드론 도착 확인.. 
     if(mutex.lock == false){
         errCount = 0 // 에러 카운트 초기화
         mutex.lock = true
@@ -239,8 +230,6 @@ function mainTask(callback){
                     mutex.lock = false
                     return;  
                 }
-                //console.log(body)
-                // console.log(nodeBebop)
                 if(body.length){
     		            drone.run(body)
                     if(nodeBebop.eventNames().length != 0){
@@ -259,50 +248,6 @@ function mainTask(callback){
     }
 }
 
-// drone.connect()
-// drone.on("PositionChanged", function(data) {
-//     droneGPS = data
-//     console.log(droneGPS)
-// })
-// 주기적으로 droneGPS 데이터 갱신
-// timer = setInterval(function(){
-//     drone.once("PositionChanged", function(data) {
-//         droneGPS = data
-//         console.log(droneGPS)
-
-//         request({
-//             url : serverURI + "/addDrone",
-//             method:"POST",
-//             json:true,
-//             body:{
-//                 gps:{
-//                     lat: 3,
-//                     lng: 0
-//                 }
-//             },
-//             },function (err, response, body) {
-//                 if (err) console.log(err)
-//                 console.log(body)
-//             }
-//         )
-//     })
-// },3000)
-
-drone.setHome = function(data){
-    drone.GPSsetting.setHome(data.x,data.y,data.z) // gps랑 아예 딴판인가?
-}
-drone.goHome = function(data){
-    drone.Piloting.navigateHome(data) //여기 data는 뭐임?
-}
-// drone.connect(function() {
-//   drone.on("PositionChanged", function(data) {
-//     console.log(data);
-//   })
-// })
-// drone.test = function(){
-//     return "test"
-// }
-
 drone.init = function(port){
     async.waterfall([
         function (callback) {
@@ -320,10 +265,11 @@ drone.init = function(port){
             //         callback(null, stdout.trim())
             //     }
             // });
+            // 테스트를 위해 mac 주소 직접 지정
             callback(null, "AA:AA:AA:AA:AA:AA")
         },
         function(mac, callback){
-            //@@ test mac = 
+            //@@ test mac 
             mac = "AA:AA:AA:AA:AA:AA"
             process.global = {mac:mac}
             console.log(`mac:${mac}`)
