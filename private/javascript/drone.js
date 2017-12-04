@@ -105,9 +105,8 @@ drone.run = function(body){
         }
         else if(msg.cmd == "gotoPos"){
             // drone.setHome(msg.params.position.lat, msg.params.position.lng, 500)
-            // 동기화 잘해야함
             // drone.navigateHome()
-        console.log("goto..")
+            console.log("goto..")
         // console.log(`goto position lat: ${msg.params.position.lat}, lng: ${msg.params.position.lng} `)
         }
         else if(msg.cmd == "land"){
